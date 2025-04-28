@@ -145,3 +145,110 @@ const TechDetail = ({ tech }) => {
     >
       <div className="flex items-center gap-4 mb-4">
         <img src={tech.icon} alt={tech.name} className="w-12 h-12" />
+        <h3 className="text-white text-2xl font-bold">{tech.name}</h3>
+      </div>
+      
+      <div className="mb-4">
+        <h4 className="text-teal-300 font-medium mb-2">Proficiency</h4>
+        <div className="w-full bg-gray-800 rounded-full h-2.5">
+          <div 
+            className="bg-gradient-to-r from-teal-500 to-blue-500 h-2.5 rounded-full transition-all duration-500"
+            style={{ width: `${tech.proficiency}%` }}
+          />
+        </div>
+        <p className="text-gray-300 text-sm mt-1 text-right">
+          {tech.level} ({tech.proficiency}%)
+        </p>
+      </div>
+      
+      <div className="mb-4">
+        <h4 className="text-teal-300 font-medium mb-2">Experience</h4>
+        <p className="text-gray-300">{tech.experience}</p>
+      </div>
+      
+      {tech.projects && (
+        <div>
+          <h4 className="text-teal-300 font-medium mb-2">Related Projects</h4>
+          <ul className="list-disc text-gray-300 ml-5">
+            {tech.projects.map((project, index) => (
+              <li key={index}>{project}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </motion.div>
+  );
+};
+
+const TechStack = () => {
+  const [selectedTech, setSelectedTech] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  
+  const categories = [
+    { id: "all", name: "All" },
+    { id: "languages", name: "Languages" },
+    { id: "frameworks", name: "Frameworks" },
+    { id: "databases", name: "Databases" },
+    { id: "tools", name: "Tools" },
+    { id: "cloud", name: "Cloud" },
+  ];
+  
+  const filteredTechnologies = selectedCategory === "all" 
+    ? technologies 
+    : technologies.filter(tech => tech.category === selectedCategory);
+  
+  return (
+    <section id="tech" className="py-16 relative z-0">
+      <motion.div variants={textVariant()}>
+        <p className="text-teal-300 sm:text-[18px] text-[14px] uppercase tracking-wider text-center">
+          Skills & Tools
+        </p>
+        <h2 className="text-white font-black md:text-[60px] sm:text-[50px] xs:text-[40px] text-[30px] text-center">
+          Tech Stack
+        </h2>
+      </motion.div>
+      
+      <motion.div 
+        variants={staggerContainer()}
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: false, amount: 0.25 }}
+        className="mt-12 max-w-7xl mx-auto"
+      >
+        <div className="flex justify-center flex-wrap gap-4 mb-8">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                selectedCategory === category.id
+                  ? "bg-teal-500 text-white"
+                  : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+        
+        <div className="flex flex-col items-center">
+          <div className="flex flex-wrap justify-center gap-6 mb-8">
+            {filteredTechnologies.map((technology, index) => (
+              <TechCard
+                key={technology.name}
+                index={index}
+                {...technology}
+                isActive={selectedTech?.name === technology.name}
+                onClick={() => setSelectedTech(technology)}
+              />
+            ))}
+          </div>
+          
+          {selectedTech && <TechDetail tech={selectedTech} />}
+        </div>
+      </motion.div>
+    </section>
+  );
+};
+
+export default SectionWrapper(TechStack, "tech");
